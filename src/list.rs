@@ -24,7 +24,7 @@ pub async fn show_list() -> Result<(), Box<dyn Error + Send>> {
         let response_json: Value = serde_json::from_str(response_text.as_str()).unwrap();
 
         let anime_list = get_anime_list_from_json(&response_json);
-        let _ = Select::new("Your anime list\n", anime_list)
+        let _ = Select::new("Status\tCompleted at\tTitle", anime_list)
             .prompt()
             .and_then(|anime| Ok(open_url(&anime)));
     }
@@ -33,6 +33,7 @@ pub async fn show_list() -> Result<(), Box<dyn Error + Send>> {
 
 pub fn get_anime_list_from_json(json: &Value) -> Vec<AnimeList> {
     let data: &Value = json.get("data").unwrap();
+
 
     data.as_array()
         .unwrap()

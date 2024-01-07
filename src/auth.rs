@@ -1,21 +1,17 @@
+use dotenv::dotenv;
 use reqwest::{
     header::{HeaderMap, HeaderValue, CONTENT_TYPE},
     Client, Url,
 };
 use serde_json::{json, Value};
+use std::env;
 use std::io::Read;
 use std::{
     error::Error,
     fs::{File, OpenOptions},
     io::Write,
 };
-use dotenv::dotenv;
-use std::env;
 use tiny_http::Server;
-
-// const SERVICE: &str = "mal-cli";
-// const CACHE_ACCESS_TOKEN: &str = "access-token";
-// const CACHE_REFRESH_TOKEN: &str = "refresh-token";
 
 pub async fn authenticate() -> Result<(String, String), Box<dyn Error>> {
     let mut auth_code = String::from("");
@@ -85,20 +81,6 @@ pub async fn authenticate() -> Result<(String, String), Box<dyn Error>> {
     ))
 }
 
-// pub async fn get_access_token_1() -> Result<String, Box<dyn Error>> {
-//     let entry_access_token = Entry::new(SERVICE, CACHE_ACCESS_TOKEN).unwrap();
-//     let entry_refresh_token = Entry::new(SERVICE, CACHE_REFRESH_TOKEN).unwrap();
-//     // if password not set
-//     if !entry_access_token.get_password().is_err() {
-//         let (access_token, refresh_token) = authenticate().await.unwrap();
-//         let _ = entry_access_token.set_password(access_token.as_str());
-//         let _ = entry_refresh_token.set_password(refresh_token.as_str());
-//         return Ok(access_token);
-//     } else {
-//         return Ok(entry_access_token.get_password().unwrap());
-//     }
-// }
-
 pub async fn get_access_token() -> Result<String, Box<dyn Error>> {
     let cache = read_token();
 
@@ -113,7 +95,10 @@ pub async fn get_access_token() -> Result<String, Box<dyn Error>> {
 }
 
 fn clean_token(token: String) -> String {
-    token.trim_start_matches("\"").trim_end_matches("\"").to_string()
+    token
+        .trim_start_matches("\"")
+        .trim_end_matches("\"")
+        .to_string()
 }
 
 fn save_token(token: &str) {

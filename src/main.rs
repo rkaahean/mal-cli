@@ -11,7 +11,6 @@ struct Args {
 #[tokio::main]
 async fn main() {
     let args = Args::parse();
-    println!("Command: {:?}", args.command);
 
     match args.command.as_str() {
         "init" => {

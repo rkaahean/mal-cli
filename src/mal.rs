@@ -7,17 +7,19 @@ pub struct AnimeList {
     id: i64,
     title: String,
     status: String,
+    finish_date: String,
 }
 
 impl AnimeList {
     pub fn new(value: &Value) -> Self {
         // parse node
         let (id, title) = Self::parse_node(value);
-        let status = Self::parse_status(value);
+        let (status, finish_date) = Self::parse_status(value);
         Self {
             id: id.unwrap(),
             title: title.unwrap().to_string(),
             status: status.unwrap().to_string(),
+            finish_date: finish_date.unwrap().to_string(),
         }
         // todo!()
     }
@@ -33,11 +35,18 @@ impl AnimeList {
         }
     }
 
-    fn parse_status(value: &Value) -> Option<&str> {
+    fn parse_status(value: &Value) -> (Option<&str>, Option<&str>) {
         let status = value.get("list_status");
         match status {
-            Some(anime_status) => anime_status.get("status").unwrap().as_str(),
-            _ => None,
+            Some(anime_status) => (
+                anime_status.get("status").unwrap().as_str(),
+                if let Some(date) = anime_status.get("finish_date") {
+                    date.as_str()
+                } else {
+                    Some("-")
+                },
+            ),
+            _ => (None, None)
         }
     }
 
@@ -56,6 +65,7 @@ impl AnimeList {
 
 impl fmt::Display for AnimeList {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}\t{}", self.status, self.title)
+        // 9 because 2023-07-06 has 10 characters
+        write!(f, "{}\t{:>9}\t{}", self.status, self.finish_date, self.title)
     }
 }
