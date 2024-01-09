@@ -1,8 +1,9 @@
 use core::fmt;
 
+use serde::Deserialize;
 use serde_json::Value;
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub struct AnimeList {
     id: i64,
     title: String,
@@ -46,7 +47,7 @@ impl AnimeList {
                     Some("-")
                 },
             ),
-            _ => (None, None)
+            _ => (None, None),
         }
     }
 
@@ -66,6 +67,32 @@ impl AnimeList {
 impl fmt::Display for AnimeList {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         // 9 because 2023-07-06 has 10 characters
-        write!(f, "{}\t{:>9}\t{}", self.status, self.finish_date, self.title)
+        write!(
+            f,
+            "{}\t{:>9}\t{}",
+            self.status, self.finish_date, self.title
+        )
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Anime {
+    id: i64,
+    title: String,
+    start_date: String,
+    end_date: String,
+    synoposis: String,
+    mean: f64,
+    rank: i64,
+}
+
+impl fmt::Display for Anime {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // 9 because 2023-07-06 has 10 characters
+        write!(
+            f,
+            "Title\t{}\nStart\t{}\nEnd\t{}\nScore\t{}\n",
+            self.title, self.start_date, self.end_date, self.mean
+        )
     }
 }

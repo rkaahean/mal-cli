@@ -83,15 +83,20 @@ pub async fn authenticate() -> Result<(String, String), Box<dyn Error>> {
 
 pub async fn get_access_token() -> Result<String, Box<dyn Error>> {
     let cache = read_token();
-
     match cache {
-        Ok(token) => Ok(token.get("token").unwrap().to_string()),
+        Ok(token) => Ok(clean_token(token.get("token").unwrap().to_string())),
         _ => {
             let (access_token, _) = authenticate().await.unwrap();
             save_token(&access_token);
             Ok(access_token)
         }
     }
+}
+
+pub async fn reauthenticate() -> Result<String, Box<dyn Error>> {
+    let (access_token, _) = authenticate().await.unwrap();
+    save_token(&access_token);
+    Ok(access_token)
 }
 
 fn clean_token(token: String) -> String {
@@ -103,9 +108,10 @@ fn clean_token(token: String) -> String {
 
 fn save_token(token: &str) {
     let data = json!({
-        "token": token
+        "token": clean_token(token.to_string())
     });
 
+    println!("Saving token...{}",token);
     let data_string = data.to_string();
     let mut file = File::create("token.json").expect("Unable to create token cache.");
 
