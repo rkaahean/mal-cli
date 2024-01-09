@@ -81,7 +81,7 @@ pub struct Anime {
     title: String,
     start_date: String,
     end_date: String,
-    synoposis: String,
+    synopsis: String,
     mean: f64,
     rank: i64,
 }
