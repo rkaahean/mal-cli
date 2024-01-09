@@ -72,7 +72,6 @@ pub async fn show_anime_details(anime: &AnimeList) {
 
     if response.status().is_success() {
         let response_text = response.text().await.unwrap();
-        println!("{}", response_text);
         let anime: Anime = serde_json::from_str(&response_text).unwrap();
         println!("{}", anime);
     }
