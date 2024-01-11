@@ -3,7 +3,7 @@ use core::fmt;
 use serde::Deserialize;
 use serde_json::Value;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct AnimeList {
     id: i64,
     title: String,
@@ -91,8 +91,8 @@ impl fmt::Display for Anime {
         // 9 because 2023-07-06 has 10 characters
         write!(
             f,
-            "Title\t{}\nStart\t{}\nEnd\t{}\nScore\t{}\n",
-            self.title, self.start_date, self.end_date, self.mean
+            "Start\t{}\nEnd\t{}\nScore\t{}\n",
+            self.start_date, self.end_date, self.mean
         )
     }
 }

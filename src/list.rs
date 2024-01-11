@@ -1,7 +1,9 @@
-use std::{error::Error, option};
+use std::error::Error;
 
 use async_recursion::async_recursion;
-use inquire::{Select, InquireError};
+use inquire::formatter::OptionFormatter;
+use inquire::list_option::ListOption;
+use inquire::{InquireError, Select};
 use reqwest::header::AUTHORIZATION;
 use serde_json::Value;
 
@@ -10,7 +12,6 @@ use crate::{
     mal::{Anime, AnimeList},
 };
 
-#[async_recursion]
 pub async fn show_list() -> Result<(), Box<dyn Error + Send>> {
     let access_token = get_access_token().await.unwrap();
     let client = reqwest::Client::new();
@@ -27,23 +28,32 @@ pub async fn show_list() -> Result<(), Box<dyn Error + Send>> {
         let response_text = response.text().await.unwrap();
         let response_json: Value = serde_json::from_str(response_text.as_str()).unwrap();
 
-
+        let formatter: OptionFormatter<AnimeList> = &|i| {
+            format!(
+                "\nOption {}: '{}'",
+                i.index + 1,
+                (*i.value).clone().get_title()
+            )
+        };
         loop {
             let anime_list = parse_anime_list_from_json(&response_json);
-            let anime = Select::new("Status\tCompleted\tTitle", anime_list).prompt();
+            let anime = Select::new("Status\tCompleted\tTitle", anime_list)
+                .with_page_size(10)
+                .with_formatter(formatter)
+                .prompt();
 
             match anime {
                 Ok(anime) => show_anime_details(&anime).await,
                 Err(_) => {
                     break;
-                },
+                }
             }
         }
-
     } else {
         // reuauthenticate and try again
         let _ = reauthenticate().await;
-        show_list().await?;
+        println!("Reauthenticated token. Please try again...")
+        // show_list().await?;
     }
     Ok(())
 }
@@ -94,8 +104,7 @@ pub async fn show_anime_details(anime: &AnimeList) {
                 open_url(anime);
             }
         }
-        _ => ()
-        
+        _ => (),
     }
 }
 
