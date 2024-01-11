@@ -26,13 +26,8 @@ pub async fn show_list() -> Result<(), Box<dyn Error + Send>> {
         let response_text = response.text().await.unwrap();
         let response_json: Value = serde_json::from_str(response_text.as_str()).unwrap();
 
-        let formatter: OptionFormatter<AnimeList> = &|i| {
-            format!(
-                "\nOption {}: '{}'",
-                i.index + 1,
-                (*i.value).clone().get_title()
-            )
-        };
+        let formatter: OptionFormatter<AnimeList> =
+            &|i| format!("\nSelected - {}", (*i.value).clone().get_title());
         loop {
             let anime_list = parse_anime_list_from_json(&response_json);
             let anime = Select::new("Status\tCompleted\tTitle", anime_list)

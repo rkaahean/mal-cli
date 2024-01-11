@@ -1,5 +1,6 @@
 use core::fmt;
 
+use chrono::NaiveDate;
 use serde::Deserialize;
 use serde_json::Value;
 
@@ -66,12 +67,16 @@ impl AnimeList {
 
 impl fmt::Display for AnimeList {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut finish_date = "-".to_string();
+        if self.finish_date != "-" {
+            finish_date = NaiveDate::parse_from_str(self.finish_date.as_str(), "%Y-%m-%d")
+                .unwrap()
+                .format("%b %d, %Y")
+                .to_string()
+        }
+
         // 9 because 2023-07-06 has 10 characters
-        write!(
-            f,
-            "{}\t{:>9}\t{}",
-            self.status, self.finish_date, self.title
-        )
+        write!(f, "{}\t{:>9}\t{}", self.status, finish_date, self.title)
     }
 }
 
@@ -88,11 +93,27 @@ pub struct Anime {
 
 impl fmt::Display for Anime {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut start_date = "-".to_string();
+        if self.start_date != "-" {
+            start_date = NaiveDate::parse_from_str(self.start_date.as_str(), "%Y-%m-%d")
+                .unwrap()
+                .format("%b %d, %Y")
+                .to_string()
+        }
+
+        let mut end_date = "-".to_string();
+        if self.end_date != "-" {
+            end_date = NaiveDate::parse_from_str(self.end_date.as_str(), "%Y-%m-%d")
+                .unwrap()
+                .format("%b %d, %Y")
+                .to_string()
+        }
+
         // 9 because 2023-07-06 has 10 characters
         write!(
             f,
             "Start\t{}\nEnd\t{}\nScore\t{}\n",
-            self.start_date, self.end_date, self.mean
+            start_date, end_date, self.mean
         )
     }
 }
