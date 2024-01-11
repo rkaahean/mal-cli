@@ -1,9 +1,7 @@
 use std::error::Error;
 
-use async_recursion::async_recursion;
 use inquire::formatter::OptionFormatter;
-use inquire::list_option::ListOption;
-use inquire::{InquireError, Select};
+use inquire::Select;
 use reqwest::header::AUTHORIZATION;
 use serde_json::Value;
 
