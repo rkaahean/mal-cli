@@ -111,7 +111,7 @@ fn save_token(token: &str) {
         "token": clean_token(token.to_string())
     });
 
-    println!("Saving token...{}",token);
+    println!("Saving token...{}", token);
     let data_string = data.to_string();
     let mut file = File::create("token.json").expect("Unable to create token cache.");
 

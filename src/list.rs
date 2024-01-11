@@ -1,9 +1,9 @@
-use std::error::Error;
+use std::{error::Error, option};
 
-use inquire::Select;
+use async_recursion::async_recursion;
+use inquire::{Select, InquireError};
 use reqwest::header::AUTHORIZATION;
 use serde_json::Value;
-use async_recursion::async_recursion;
 
 use crate::{
     auth::{get_access_token, reauthenticate},
@@ -27,13 +27,19 @@ pub async fn show_list() -> Result<(), Box<dyn Error + Send>> {
         let response_text = response.text().await.unwrap();
         let response_json: Value = serde_json::from_str(response_text.as_str()).unwrap();
 
-        let anime_list = parse_anime_list_from_json(&response_json);
-        let anime = Select::new("Status\tCompleted at\tTitle", anime_list).prompt();
 
-        match anime {
-            Ok(anime) => show_anime_details(&anime).await,
-            _ => (),
+        loop {
+            let anime_list = parse_anime_list_from_json(&response_json);
+            let anime = Select::new("Status\tCompleted\tTitle", anime_list).prompt();
+
+            match anime {
+                Ok(anime) => show_anime_details(&anime).await,
+                Err(_) => {
+                    break;
+                },
+            }
         }
+
     } else {
         // reuauthenticate and try again
         let _ = reauthenticate().await;
@@ -74,6 +80,22 @@ pub async fn show_anime_details(anime: &AnimeList) {
         let response_text = response.text().await.unwrap();
         let anime: Anime = serde_json::from_str(&response_text).unwrap();
         println!("{}", anime);
+    }
+
+    let options: Result<String, inquire::InquireError> = Select::new(
+        "Options",
+        vec!["Go back".to_string(), "Open MAL page".to_string()],
+    )
+    .prompt();
+
+    match options {
+        Ok(choice) => {
+            if choice == "Open MAL page" {
+                open_url(anime);
+            }
+        }
+        _ => ()
+        
     }
 }
 
