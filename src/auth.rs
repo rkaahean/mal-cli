@@ -3,7 +3,7 @@ use reqwest::{
     Client, Url,
 };
 use serde_json::{json, Value};
-use std::env;
+use std::{env, path::Path, fs};
 use std::io::Read;
 use std::{
     error::Error,
@@ -109,7 +109,7 @@ fn save_token(token: &str) {
     });
 
     let data_string = data.to_string();
-    let mut file = File::create("token.json").expect("Unable to create token cache.");
+    let mut file = File::create("~/.config/mal-cli/token.json").expect("Unable to create token cache.");
 
     // save
     file.write_all(data_string.as_bytes())
@@ -117,11 +117,29 @@ fn save_token(token: &str) {
 }
 
 fn read_token() -> Result<Value, serde_json::Error> {
+
+    let path = Path::new("~/.config/mal-cli/");
+    if !path.exists() {
+        // Try to create the directory
+        match fs::create_dir_all(path) {
+            Ok(_) => (),
+            Err(e) => println!("Error creating directory: {}", e),
+        }
+    }
+
+    // Check if the directory exists
+    if !path.exists() {
+        // Try to create the directory
+        match fs::create_dir_all(path) {
+            Ok(_) => println!("Directory created successfully."),
+            Err(e) => println!("Error creating directory: {}", e),
+        }
+    }
     let mut file = OpenOptions::new()
         .read(true)
         .create(true)
         .write(true)
-        .open("token.json")
+        .open("~/.config/mal-cli/token.json")
         .expect("Unable to create file..");
 
     let mut contents = Vec::new();
