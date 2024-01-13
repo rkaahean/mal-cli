@@ -1,4 +1,5 @@
 # Introduction
+![Crates.io Version](https://img.shields.io/crates/v/mal-cli)
 
 A CLI tool for MyAnimeList, written in rust.
 
