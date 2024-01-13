@@ -1,5 +1,4 @@
 use clap::{Parser, Subcommand};
-use mal_cli::init::initialize_client;
 use mal_cli::list::{show_list, ListArgs};
 use mal_cli::season::{show_season, SeasonArgs};
 
@@ -13,18 +12,16 @@ struct Args {
 enum Commands {
     List {
         // Numer of anime to show in list
-        num: Option<i32>
+        num: Option<i32>,
     },
     Season {
         // Get seasonal anime
         #[clap(long)]
         season: Option<String>,
         #[clap(long)]
-        year: Option<i32>
-    }
-
+        year: Option<i32>,
+    },
 }
-
 
 #[derive(Parser, Debug)]
 struct Init {
@@ -43,6 +40,6 @@ async fn main() {
         Commands::Season { season, year } => {
             // shows the anime in the current season
             show_season(SeasonArgs::new(season, year)).await.unwrap();
-        },
+        }
     }
 }

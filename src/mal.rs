@@ -120,12 +120,10 @@ impl fmt::Display for Anime {
         }
 
         let end_date = match &self.end_date {
-            Some(date) => {
-                NaiveDate::parse_from_str(&date.as_str(), "%Y-%m-%d")
+            Some(date) => NaiveDate::parse_from_str(&date.as_str(), "%Y-%m-%d")
                 .unwrap()
                 .format("%b %d, %Y")
-                .to_string()
-            },
+                .to_string(),
             _ => "-".to_string(),
         };
 

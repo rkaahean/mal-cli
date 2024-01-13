@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use chrono::{Utc, Datelike};
+use chrono::{Datelike, Utc};
 use inquire::{formatter::OptionFormatter, Select};
 use reqwest::header::AUTHORIZATION;
 use serde_json::Value;
@@ -32,7 +32,7 @@ pub async fn show_season(args: SeasonArgs) -> Result<(), Box<dyn Error + Send>> 
     };
     let year = match args.year {
         Some(year) => year,
-        _ => Utc::now().year()
+        _ => Utc::now().year(),
     };
 
     let response = client
