@@ -1,4 +1,3 @@
-use dotenv::dotenv;
 use reqwest::{
     header::{HeaderMap, HeaderValue, CONTENT_TYPE},
     Client, Url,
@@ -16,9 +15,7 @@ use tiny_http::Server;
 pub async fn authenticate() -> Result<(String, String), Box<dyn Error>> {
     let mut auth_code = String::from("");
 
-    // load environemnt vars
-    dotenv().ok();
-    let client_id = env::var("CLIENT_ID").expect("CLIENT_ID must be set");
+    let client_id = env::var("MAL_CLI_CLIENT_ID").expect("Client ID not set.");
     let client_id = client_id.as_str();
     let code_challenge = "7tPPwQCPWku8SYxrDr1VyLBHXne7RVNmB8ndAwGvZYTCrD";
 
