@@ -5,7 +5,7 @@ edition = "2021"
 description = "A CLI tool for MyAnimeList, written in rust."
 license = "MIT OR Apache-2.0"
 keywords = ["MAL", "Anime", "MyAnimeList"]
-categories = ["command-line-utilities", "anime"]
+categories = ["command-line-utilities"]
 repository = "https://github.com/rkaahean/mal-cli"
 readme = "README.md"
 
