@@ -85,10 +85,28 @@ pub struct Anime {
     id: i64,
     title: String,
     start_date: String,
-    end_date: String,
+    end_date: Option<String>,
     synopsis: String,
     mean: f64,
     rank: i64,
+}
+
+impl Anime {
+    pub fn get_id(self) -> i64 {
+        self.id
+    }
+
+    pub fn get_title(self) -> String {
+        self.title
+    }
+
+    pub fn get_synopsis(self) -> String {
+        self.synopsis
+    }
+
+    pub fn get_rank(self) -> i64 {
+        self.rank
+    }
 }
 
 impl fmt::Display for Anime {
@@ -101,13 +119,15 @@ impl fmt::Display for Anime {
                 .to_string()
         }
 
-        let mut end_date = "-".to_string();
-        if self.end_date != "-" {
-            end_date = NaiveDate::parse_from_str(self.end_date.as_str(), "%Y-%m-%d")
+        let end_date = match &self.end_date {
+            Some(date) => {
+                NaiveDate::parse_from_str(&date.as_str(), "%Y-%m-%d")
                 .unwrap()
                 .format("%b %d, %Y")
                 .to_string()
-        }
+            },
+            _ => "-".to_string(),
+        };
 
         // 9 because 2023-07-06 has 10 characters
         write!(
@@ -115,5 +135,27 @@ impl fmt::Display for Anime {
             "Start\t{}\nEnd\t{}\nScore\t{}\n",
             start_date, end_date, self.mean
         )
+    }
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct SeasonalAnime {
+    id: i64,
+    title: String,
+}
+
+impl SeasonalAnime {
+    pub fn get_id(self) -> i64 {
+        self.id
+    }
+
+    pub fn get_title(self) -> String {
+        self.title
+    }
+}
+
+impl fmt::Display for SeasonalAnime {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}\t{}", self.id, self.title)
     }
 }

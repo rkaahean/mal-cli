@@ -10,13 +10,27 @@ use crate::{
     mal::{Anime, AnimeList},
 };
 
-pub async fn show_list() -> Result<(), Box<dyn Error + Send>> {
+pub struct ListArgs {
+    num: Option<i32>,
+}
+
+impl ListArgs {
+    pub fn new(num: Option<i32>) -> Self {
+        Self { num }
+    }
+}
+
+pub async fn show_list(args: ListArgs) -> Result<(), Box<dyn Error + Send>> {
     let access_token = get_access_token().await.unwrap();
     let client = reqwest::Client::new();
 
+    let num_anime = match args.num {
+        Some(num) => num,
+        _ => 10,
+    };
     // post request
     let response = client
-        .get("https://api.myanimelist.net/v2/users/@me/animelist?fields=list_status&limit=30")
+        .get(format!("https://api.myanimelist.net/v2/users/@me/animelist?fields=list_status&limit={num_anime}"))
         .header(AUTHORIZATION, format!("Bearer {}", &access_token))
         .send()
         .await
@@ -36,7 +50,7 @@ pub async fn show_list() -> Result<(), Box<dyn Error + Send>> {
                 .prompt();
 
             match anime {
-                Ok(anime) => show_anime_details(&anime).await,
+                Ok(anime) => show_anime_details(anime.get_id()).await,
                 Err(_) => {
                     break;
                 }
@@ -46,7 +60,6 @@ pub async fn show_list() -> Result<(), Box<dyn Error + Send>> {
         // reuauthenticate and try again
         let _ = reauthenticate().await;
         println!("Reauthenticated token. Please try again...")
-        // show_list().await?;
     }
     Ok(())
 }
@@ -61,7 +74,7 @@ pub fn parse_anime_list_from_json(json: &Value) -> Vec<AnimeList> {
         .collect::<Vec<AnimeList>>()
 }
 
-pub async fn show_anime_details(anime: &AnimeList) {
+pub async fn show_anime_details(id: i64) {
     /*
        Get details about the anime
     */
@@ -70,8 +83,8 @@ pub async fn show_anime_details(anime: &AnimeList) {
     let response = client
             .get(
                 format!(
-                    "https://api.myanimelist.net/v2/anime/{}?fields=id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank",
-                    anime.get_id()
+                    "https://api.myanimelist.net/v2/anime/{}?fields=id,title,start_date,end_date,synopsis,mean,rank",
+                    id
                 )
             )
             .header(AUTHORIZATION, format!("Bearer {}", &access_token))
@@ -94,13 +107,13 @@ pub async fn show_anime_details(anime: &AnimeList) {
     match options {
         Ok(choice) => {
             if choice == "Open MAL page" {
-                open_url(anime);
+                open_url(id);
             }
         }
         _ => (),
     }
 }
 
-pub fn open_url(anime: &AnimeList) {
-    open::that(format!("https://myanimelist.net/anime/{}", anime.get_id())).unwrap();
+pub fn open_url(id: i64) {
+    open::that(format!("https://myanimelist.net/anime/{}", id)).unwrap();
 }
