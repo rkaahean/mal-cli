@@ -1,5 +1,5 @@
 # Introduction
-![Crates.io Version](https://img.shields.io/crates/v/mal-cli)
+[![Crates.io Version](https://img.shields.io/crates/v/mal-cli)](https://crates.io/crates/mal-cli)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/rkaahean/mal-cli/rust.yml)
 
 
