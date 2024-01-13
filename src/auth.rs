@@ -3,8 +3,8 @@ use reqwest::{
     Client, Url,
 };
 use serde_json::{json, Value};
-use std::{env, path::Path, fs};
 use std::io::Read;
+use std::{env, fs, path::Path};
 use std::{
     error::Error,
     fs::{File, OpenOptions},
@@ -12,10 +12,7 @@ use std::{
 };
 use tiny_http::Server;
 
-
-
 pub async fn authenticate() -> Result<(String, String), Box<dyn Error>> {
-
     let mut auth_code = String::from("");
 
     let client_id = env::var("MAL_CLI_CLIENT_ID").expect("Client ID not set.");
@@ -118,7 +115,8 @@ fn save_token(token: &str, token_location: String) {
     });
 
     let data_string = data.to_string();
-    let mut file = File::create(format!("{token_location}/token.json")).expect("Unable to create token cache.");
+    let mut file = File::create(format!("{token_location}/token.json"))
+        .expect("Unable to create token cache.");
 
     // save
     file.write_all(data_string.as_bytes())
@@ -126,7 +124,6 @@ fn save_token(token: &str, token_location: String) {
 }
 
 fn read_token(token_location: String) -> Result<Value, serde_json::Error> {
-
     let binding = token_location.clone();
     let path = Path::new(&binding);
     if !path.exists() {
