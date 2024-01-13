@@ -12,7 +12,10 @@ use std::{
 };
 use tiny_http::Server;
 
+
+
 pub async fn authenticate() -> Result<(String, String), Box<dyn Error>> {
+
     let mut auth_code = String::from("");
 
     let client_id = env::var("MAL_CLI_CLIENT_ID").expect("Client ID not set.");
@@ -79,20 +82,26 @@ pub async fn authenticate() -> Result<(String, String), Box<dyn Error>> {
 }
 
 pub async fn get_access_token() -> Result<String, Box<dyn Error>> {
-    let cache = read_token();
+    let home: String = env::var("HOME").unwrap();
+    let token_location: String = format!("{home}/.config/mal-cli");
+
+    let cache = read_token(token_location.clone());
     match cache {
         Ok(token) => Ok(clean_token(token.get("token").unwrap().to_string())),
         _ => {
             let (access_token, _) = authenticate().await.unwrap();
-            save_token(&access_token);
+            save_token(&access_token, token_location);
             Ok(access_token)
         }
     }
 }
 
 pub async fn reauthenticate() -> Result<String, Box<dyn Error>> {
+    let home: String = env::var("HOME").unwrap();
+    let token_location: String = format!("{home}/.config/mal-cli");
+
     let (access_token, _) = authenticate().await.unwrap();
-    save_token(&access_token);
+    save_token(&access_token, token_location);
     Ok(access_token)
 }
 
@@ -103,22 +112,23 @@ fn clean_token(token: String) -> String {
         .to_string()
 }
 
-fn save_token(token: &str) {
+fn save_token(token: &str, token_location: String) {
     let data = json!({
         "token": clean_token(token.to_string())
     });
 
     let data_string = data.to_string();
-    let mut file = File::create("~/.config/mal-cli/token.json").expect("Unable to create token cache.");
+    let mut file = File::create(format!("{token_location}/token.json")).expect("Unable to create token cache.");
 
     // save
     file.write_all(data_string.as_bytes())
         .expect("Unable to write token cache.");
 }
 
-fn read_token() -> Result<Value, serde_json::Error> {
+fn read_token(token_location: String) -> Result<Value, serde_json::Error> {
 
-    let path = Path::new("~/.config/mal-cli/");
+    let binding = token_location.clone();
+    let path = Path::new(&binding);
     if !path.exists() {
         // Try to create the directory
         match fs::create_dir_all(path) {
@@ -139,7 +149,7 @@ fn read_token() -> Result<Value, serde_json::Error> {
         .read(true)
         .create(true)
         .write(true)
-        .open("~/.config/mal-cli/token.json")
+        .open(format!("{token_location}/token.json"))
         .expect("Unable to create file..");
 
     let mut contents = Vec::new();
