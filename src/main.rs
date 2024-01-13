@@ -11,11 +11,6 @@ struct Args {
 
 #[derive(Subcommand, Debug)]
 enum Commands {
-    /// Intialize the client Id
-    Init {
-        /// value of client ID
-        value: String,
-    },
     List {
         // Numer of anime to show in list
         num: Option<i32>
@@ -41,9 +36,6 @@ async fn main() {
     let args = Args::parse();
 
     match args.command {
-        Commands::Init { value } => {
-            initialize_client(value);
-        }
         Commands::List { num } => {
             // shows a list of the current anime in your list
             show_list(ListArgs::new(num)).await.unwrap();
