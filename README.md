@@ -1,5 +1,7 @@
 # Introduction
 ![Crates.io Version](https://img.shields.io/crates/v/mal-cli)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/rkaahean/mal-cli/rust.yml)
+
 
 A CLI tool for MyAnimeList, written in rust.
 
