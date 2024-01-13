@@ -6,7 +6,9 @@ A CLI tool for MyAnimeList, written in rust.
 
 # Installation
 
-Do `cargo install mal-cli`.
+```bash
+cargo install mal-cli
+```
 
 # Setup
 
