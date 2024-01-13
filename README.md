@@ -15,15 +15,18 @@ cargo install mal-cli
 1. You will need your own client ID. You you get one [here](https://myanimelist.net/apiconfig/create).
    - The app redirect URL needs to be `http://localhost:8080`. Everything else can be custom.
    - Example ![CleanShot 2024-01-13 at 12 28 58@2x](https://github.com/rkaahean/mal-cli/assets/16059999/b32e4701-3360-4f22-9cdb-45d93caceb41)
-2. Create a `.env` file, and insert the client ID. See `.env.example`. 
+2. Export the client ID as an env.
+   ```bash
+   export MAL_CLI_CLIENT_ID=
+   ```
 
 # Usage
 
 ### `list`
-Shows your MyAnimeList. Ex: `cargo run list`. You can add an additional parameter `--num` to filter for the number of anime returned.
+Shows your MyAnimeList. Ex: `mal-cli list`. You can add an additional parameter `--num` to filter for the number of anime returned.
 
 ### `season`
 Shows the anime for a given season and year. 
-Ex: `cargo run season --season=fall --year=2022`
+Ex: `mal-cli season --season=fall --year=2022`
    
 
