@@ -8,10 +8,13 @@ use mal_cli::season::{show_season, SeasonArgs};
 struct Args {
     command: String,
     #[clap(long)]
+    /// Number of results
     num: Option<i32>,
     #[clap(long)]
+    /// Season of the anime
     season: Option<String>,
     #[clap(long)]
+    /// Year of the season
     year: Option<i32>,
 }
 
